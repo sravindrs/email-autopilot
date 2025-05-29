@@ -1,0 +1,55 @@
+# version: '3.8'
+# services:
+#   backend:
+#     build: ./backend
+#     ports:
+#       - "8000:8000"
+#     env_file:
+#       - ./backend/.env
+#     volumes:
+#       - ./backend:/app
+#   frontend:
+#     build: ./frontend
+#     command: npm run build
+#     # volumes:
+#     #   - ./frontend:/app
+
+
+
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: emailautopilot
+      POSTGRES_PASSWORD: emailautopilot
+      POSTGRES_DB: emailautopilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  # Frontend is only for building the extension, not for running a server
+  frontend:
+    build: ./frontend
+    command: npm run build
+    # No volume mount! Don't overwrite container files with host files.
+    # No ports needed.
+    # Remove/comment out the following line if present:
+    # volumes:
+    #   - ./frontend:/app
+
+volumes:
+  db_data:
